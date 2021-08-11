@@ -26,3 +26,10 @@ class LoginForm(FlaskForm):
 class CommentForm(FlaskForm):
     comment = TextAreaField("Comment", validators=[DataRequired()])
     submit = SubmitField("Punch it, Chewie")
+
+class ContactForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    phone = StringField("Phone")
+    message = TextAreaField("Message", validators=[DataRequired()])
+    submit = SubmitField("Send")

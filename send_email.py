@@ -9,7 +9,7 @@ class Email:
         server.ehlo()
 
         server.starttls()  #secures connection
-        server.login(user= os.environ.get("MY_EMAIL"), password= os.environ.get("PASS"))
+        server.login(user= os.environ.get("MY_EMAIL"), password=os.environ.get("PASS"))
         server.sendmail(
             from_addr= os.environ.get("MY_EMAIL"),
             to_addrs= os.environ.get("MY_EMAIL"),

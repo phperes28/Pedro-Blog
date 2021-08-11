@@ -1,20 +1,35 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, abort
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
+from flask_mail import Mail, Message
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
+from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, ContactForm
 from flask_gravatar import Gravatar
 from functools import wraps
 import os
 from send_email import Email
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+# os.environ.get("SECRET_KEY")
+
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+ #TURN INTO ENVIRON
+app.config['MAIL_USERNAME'] = os.environ.get("MY_EMAIL")
+app.config['MAIL_PASSWORD'] = os.environ.get("PASS")
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+
+
+
+mail = Mail(app)
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
@@ -206,14 +221,20 @@ def about():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
-    if "method" == "POST":
+    form = ContactForm()
+    if form.validate_on_submit():
+
         name = request.form.get("name")
         email = request.form.get("email")
         phone = request.form.get("phone")
         message = request.form.get("message")
-        sender = Email()
-        sender.send_email(name,email, phone, message)
-    return render_template("contact.html")
+        msg = Message('New Contact Form!', sender = os.environ.get("MY_EMAIL"), recipients = [os.environ.get("OTHER_EMAIL")])
+        msg.body = f"{name}\n{email}\n{phone}\n{message}"
+        mail.send(msg)
+
+        return render_template('index.html')
+
+    return render_template("contact.html", form=form)
 
 
 @app.route("/new-post", methods=["GET", "POST"])

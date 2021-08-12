@@ -16,7 +16,7 @@ from send_email import Email
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY") or "8BYkEfBA6O6donzWlSihBXox7C0sKR6b"
 # os.environ.get("SECRET_KEY")
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -157,7 +157,12 @@ def register():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    if request.method == "POST":
+    if request.method == "POST" and request.form.get("register"):
+        form=RegisterForm()
+        return render_template("register.html", form=form)
+
+
+    if request.method == "POST" and form.validate_on_submit():
         email = request.form.get("email")
         password = request.form.get("password")
 
@@ -179,6 +184,8 @@ def login():
         else:
             login_user(user)
             return redirect(url_for('get_all_posts'))
+
+
 
     return render_template("login.html", form=form)
 

@@ -162,7 +162,7 @@ def login():
         return render_template("register.html", form=form)
 
 
-    if request.method == "POST" and form.validate_on_submit():
+    elif request.method == "POST" and form.validate_on_submit():
         email = request.form.get("email")
         password = request.form.get("password")
 
